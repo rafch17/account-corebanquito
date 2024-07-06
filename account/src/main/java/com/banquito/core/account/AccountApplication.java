@@ -1,4 +1,4 @@
-package core.banquito.core.account;
+package com.banquito.core.account;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

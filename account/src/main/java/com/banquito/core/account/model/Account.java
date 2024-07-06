@@ -1,4 +1,4 @@
-package core.banquito.core.account.model;
+package com.banquito.core.account.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

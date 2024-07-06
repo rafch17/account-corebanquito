@@ -1,8 +1,7 @@
-package core.banquito.core.account.model;
+package com.banquito.core.account.model;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -21,34 +20,40 @@ import lombok.ToString;
 @Setter
 @ToString
 @Entity
-@Table(name = "ACCOUNT_INTEREST_ACCRUED")
-public class AccountInterestAccrued implements Serializable {
+@Table(name = "DEBIT_CARD")
+public class DebitCard implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ACCOUNT_INTEREST_ACCRUED_ID")
+    @Column(name = "DEBIT_CARD_ID")
     private Long id;
 
     @ManyToOne
     @JoinColumn(name = "ACCOUNT_ID", nullable = false)
     private Account account;
 
-    @Column(name = "UNIQUE_KEY", length = 32, nullable = false)
-    private String uniqueKey;
+    @Column(name = "CLIENT_ID", nullable = false)
+    private Long clientId;
 
-    @Column(name = "EXECUTION_DATE", nullable = false)
-    private LocalDateTime executionDate;
+    @Column(name = "CARD_NUMBER", length = 20, nullable = false)
+    private String cardNumber;
 
-    @Column(name = "AMMOUNT", precision = 17, scale = 2, nullable = false)
-    private BigDecimal ammount;
+    @Column(name = "CCV", length = 3, nullable = false)
+    private String ccv;
 
-    @Column(name = "INTEREST_RATE", precision = 5, scale = 2, nullable = false)
-    private BigDecimal interestRate;
+    @Column(name = "EXPIRATION_DATE", nullable = false)
+    private LocalDate expirationDate;
 
-    @Column(name = "STATUS", length = 3, nullable = false)
-    private String status;
+    @Column(name = "CARDHOLDER_NAME", length = 50, nullable = false)
+    private String cardholderName;
 
-    public AccountInterestAccrued(Long id) {
+    @Column(name = "CARD_UNIQUE_KEY", length = 32, nullable = false)
+    private String cardUniqueKey;
+
+    @Column(name = "PIN", length = 64, nullable = false)
+    private String pin;
+
+    public DebitCard(Long id) {
         this.id = id;
     }
 
@@ -68,7 +73,7 @@ public class AccountInterestAccrued implements Serializable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        AccountInterestAccrued other = (AccountInterestAccrued) obj;
+        DebitCard other = (DebitCard) obj;
         if (id == null) {
             if (other.id != null)
                 return false;
