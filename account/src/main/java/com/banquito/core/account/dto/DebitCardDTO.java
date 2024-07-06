@@ -1,16 +1,16 @@
 package com.banquito.core.account.dto;
 
-import java.time.LocalDate;
-import com.banquito.core.account.model.Account;
 import lombok.Builder;
 import lombok.Value;
+
+import java.time.LocalDate;
 
 @Value
 @Builder
 public class DebitCardDTO {
     private Long id;
-    private Account account;
-    private Long clientId;
+    private Long accountId;
+    private Integer clientId;
     private String cardNumber;
     private String ccv;
     private LocalDate expirationDate;
