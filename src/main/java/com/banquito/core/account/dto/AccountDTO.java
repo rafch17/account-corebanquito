@@ -8,8 +8,8 @@ import lombok.Value;
 @Builder
 public class AccountDTO {
 
-    private Long id;
-    private Long clientId;
+    private Integer id;
+    private Integer clientId;
     private String codeUniqueAccount;
     private String codeInternalAccount;
     private String codeInternationalAccount;
@@ -18,5 +18,4 @@ public class AccountDTO {
     private BigDecimal currentBalance;
     private BigDecimal availableBalance;
     private BigDecimal blockedBalance;
-    
 }

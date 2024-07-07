@@ -12,6 +12,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     Optional<Account> findByClientId(Integer clientId);
 
-
+    List <Account> findAll();
 
 }
