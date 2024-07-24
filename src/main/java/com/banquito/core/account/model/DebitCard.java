@@ -29,11 +29,14 @@ public class DebitCard implements Serializable{
     @Column(name = "DEBIT_CARD_ID")
     private Long id;
 
+    @Column(name = "UNIQUE_ID", length = 16, nullable = false)
+    private String uniqueId;
+
     @Column(name = "CLIENT_ID", nullable = false)
     private Long clientId;
 
     @Column(name = "ACCOUNT_ID", nullable = false)
-    private Integer accountId;
+    private Long accountId;
 
     @Column(name = "CARD_NUMBER", length = 20, nullable = false)
     private String cardNumber;

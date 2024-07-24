@@ -30,6 +30,9 @@ public class AccountTransaction implements Serializable{
     @Column(name = "ACCOUNT_TRANSACTION_ID", nullable = false)
     private Integer id;
 
+    @Column(name = "UNIQUE_ID", length = 16, nullable = false)
+    private String uniqueId;
+
     @Column(name = "ACCOUNT_ID", nullable = false)
     private Integer accountId;
 
@@ -64,8 +67,8 @@ public class AccountTransaction implements Serializable{
     private String debitorAccount;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "CREATION_DATE", nullable = false)
-    private LocalDateTime creationDate;
+    @Column(name = "CREATE_DATE", nullable = false)
+    private LocalDateTime createDate;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "BOOKING_DATE", nullable = false)
@@ -81,8 +84,8 @@ public class AccountTransaction implements Serializable{
     @Column(name = "PARENT_TRANSACTION_KEY", length = 32)
     private String parentTransactionKey;
 
-    @Column(name = "STATE", length = 3, nullable = false)
-    private String state;
+    @Column(name = "STATUS", length = 3, nullable = false)
+    private String status;
 
     @Column(name = "NOTES", length = 200)
     private String notes;

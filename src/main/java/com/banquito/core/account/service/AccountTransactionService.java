@@ -31,7 +31,7 @@ public class AccountTransactionService {
             Account account = accountRepository.getById(dto.getAccountId());
             AccountTransaction transaction1 = this.accountTransactionMapper.toPersistence(dto);
             AccountTransaction transaction = new AccountTransaction();
-            transaction1.setCreationDate(LocalDateTime.now());
+            transaction1.setCreateDate(LocalDateTime.now());
             transaction1.setBookingDate(LocalDateTime.now());
             transaction1.setValueDate(LocalDateTime.now());
             transaction1.setApplyTax(false);
