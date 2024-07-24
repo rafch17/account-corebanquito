@@ -49,11 +49,13 @@ public class AccountService {
             throw new RuntimeException("Código único repetido");
         }
 
-        dto = generateAccountCodesAndNumbers(dto);
         Account account = this.accountMapper.toPersistence(dto);
         account.setCreationDate(LocalDateTime.now());
         account.setLastModifiedDate(LocalDateTime.now());
         account.setState("INA");
+        account.setCodeUniqueAccount(generateUniqueAccountCode());
+        account.setCodeInternationalAccount(generateInternationalAccountCode());
+
         Account accountCreated = this.repository.save(account);
         return this.accountMapper.toDTO(accountCreated);
     }
@@ -67,34 +69,21 @@ public class AccountService {
         return accounts.stream().map(accountMapper::toDTO).collect(Collectors.toList());
     }
 
-    private AccountDTO generateAccountCodesAndNumbers(AccountDTO dto) {
-        return AccountDTO.builder()
-                .id(dto.getId())
-                .clientId(dto.getClientId())
-                .codeInternalAccount(generateUniqueAccountCode())
-                .codeInternalAccount(generateInternalAccountCode())
-                .codeInternationalAccount(generateInternationalAccountCode())
-                .number(generateAccountNumber())
-                .state("INA")
-                .currentBalance(dto.getCurrentBalance())
-                .availableBalance(dto.getAvailableBalance())
-                .blockedBalance(dto.getBlockedBalance())
-                .build();
-    }
-
     private String generateUniqueAccountCode() {
-        return UUID.randomUUID().toString().replace("-", "").substring(0, 32).toUpperCase();
-    }
-
-    private String generateInternalAccountCode() {
-        return String.format("%010d", ThreadLocalRandom.current().nextInt(1, 1000000000));
+        // Obtener el último valor de codeUniqueAccount y generar el nuevo valor
+        String lastCodeUniqueAccount = repository.findTopByOrderByCodeUniqueAccountDesc()
+                .map(Account::getCodeUniqueAccount)
+                .orElse("CUA0000000");
+        int newCode = Integer.parseInt(lastCodeUniqueAccount.substring(3)) + 1;
+        return String.format("CUA%06d", newCode);
     }
 
     private String generateInternationalAccountCode() {
-        return "INT" + String.format("%013d", ThreadLocalRandom.current().nextLong(1, 10000000000000L));
-    }
-
-    private String generateAccountNumber() {
-        return String.format("%013d", ThreadLocalRandom.current().nextLong(1, 10000000000000L));
+        // Obtener el último valor de codeInternationalAccount y generar el nuevo valor
+        String lastCodeInternationalAccount = repository.findTopByOrderByCodeInternationalAccountDesc()
+                .map(Account::getCodeInternationalAccount)
+                .orElse("CIAINT0000000");
+        int newCode = Integer.parseInt(lastCodeInternationalAccount.substring(6)) + 1;
+        return String.format("CIAINT%06d", newCode);
     }
 }

@@ -9,4 +9,6 @@ public interface AccountRepository extends JpaRepository<Account,Integer>{
     Optional<Account> findByCodeInternalAccount(String codeInternalAccount);
     Optional<Account> findByClientId(Integer clientId);
     List<Account> findAll();
+    Optional<Account> findTopByOrderByCodeUniqueAccountDesc();
+    Optional<Account> findTopByOrderByCodeInternationalAccountDesc();
 }
