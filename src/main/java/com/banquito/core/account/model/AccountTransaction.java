@@ -51,8 +51,8 @@ public class AccountTransaction implements Serializable{
     @Column(name = "REFERENCE", length = 50, nullable = false)
     private String reference;
 
-    @Column(name = "AMMOUNT", precision = 17, scale = 2, nullable = false)
-    private BigDecimal ammount;
+    @Column(name = "AMOUNT", precision = 17, scale = 2, nullable = false)
+    private BigDecimal amount;
 
     @Column(name = "CREDITOR_BANK_CODE", length = 20)
     private String creditorBankCode;

@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(origins = "*", allowedHeaders = "*", methods = { RequestMethod.GET, RequestMethod.POST,
     RequestMethod.PUT })
 @RestController
-@RequestMapping("/accounts")
+@RequestMapping("/api/v1/accounts")
 public class AccountController {
 
     private final AccountMapper accountMapper;
@@ -29,7 +29,7 @@ public class AccountController {
         this.service = service;
     }
 
-    @GetMapping("/by-number/{codeInternalAccount}")
+    @GetMapping("/{codeInternalAccount}")
     public ResponseEntity<AccountDTO> getAccountByCodeUniqueAccount(@PathVariable String codeInternalAccount) {
         try {
             System.out.println("Va a buscar una cuenta por el numero:" + codeInternalAccount);
@@ -40,7 +40,7 @@ public class AccountController {
         }
     }
 
-    @GetMapping("/client-id/{clientId}")
+    @GetMapping("/client/{clientId}")
     public ResponseEntity<AccountDTO> getAccountByClientId(@PathVariable Integer clientId) {
         try {
             System.out.println("Va a buscar una cuenta por id del cliente:" + clientId);

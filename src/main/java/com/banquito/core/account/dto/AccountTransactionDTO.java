@@ -9,16 +9,17 @@ import lombok.Value;
 @Builder
 public class AccountTransactionDTO {
     private Integer accountId;
+    private String uniqueId;
     private String codeChannel;
     private String uniqueKey;
     private String transactionType;
     private String transactionSubtype;
     private String reference;
-    private BigDecimal ammount;
+    private BigDecimal amount;
     private String creditorAccount;
     private String debitorAccount;
-    private LocalDateTime creationDate;
+    private LocalDateTime createDate;
     private Boolean applyTax;
     private String parentTransactionKey;
-    private String state;
+    private String status;
 }

@@ -24,12 +24,12 @@ public class AccountService {
         this.accountMapper = accountMapper;
     }
 
-    public Account obtainAccount(String codeUniqueAccount) {
-        Optional<Account> accountOpt = this.repository.findByCodeInternalAccount(codeUniqueAccount);
+    public Account obtainAccount(String codeInternalAccount) {
+        Optional<Account> accountOpt = this.repository.findByCodeInternalAccount(codeInternalAccount);
         if (accountOpt.isPresent()) {
             return accountOpt.get();
         } else {
-            throw new RuntimeException("No existe la ceunta con el numero" + codeUniqueAccount);
+            throw new RuntimeException("No existe la ceunta con el numero" + codeInternalAccount);
         }
     }
 

@@ -7,18 +7,18 @@ import com.banquito.core.account.util.mapper.AccountTransactionMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*", methods = { RequestMethod.GET, RequestMethod.POST,
     RequestMethod.PUT })
 @RestController
-@RequestMapping("/account-transactions")
+@RequestMapping("/api/v1/account-transactions")
 public class AccountTransactionController {
 
     private AccountTransactionService transactionService;
@@ -33,6 +33,7 @@ public class AccountTransactionController {
     @PostMapping
     public ResponseEntity<AccountTransaction> createTransaction(@RequestBody AccountTransactionDTO dto) {
         try {
+            System.out.println("DTO recibido: " + dto);
             AccountTransaction dtoTr = this.transactionService.processTransaction(dto);
             return ResponseEntity.ok(dtoTr);
         } catch (RuntimeException rte) {
@@ -41,11 +42,11 @@ public class AccountTransactionController {
         }
     }
 
-    @GetMapping("/transactions")
+    @GetMapping("/{codeInternalAccount}")
     public ResponseEntity<List<AccountTransactionDTO>> getTransactionsByCodeUniqueAccount(
-            @RequestParam String codeUniqueAccount) {
+            @PathVariable String codeInternalAccount) {
         List<AccountTransaction> transactions = transactionService
-                .findTransactionsByCodeUniqueAccount(codeUniqueAccount);
+                .findTransactionsByCodeUniqueAccount(codeInternalAccount);
         List<AccountTransactionDTO> transactionDTOs = transactionMapper.toDTOList(transactions);
         return ResponseEntity.ok(transactionDTOs);
     }
