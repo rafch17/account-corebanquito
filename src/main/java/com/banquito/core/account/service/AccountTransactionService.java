@@ -42,19 +42,19 @@ public class AccountTransactionService {
                 transaction1.setBookingDate(LocalDateTime.now());
                 transaction1.setValueDate(LocalDateTime.now());
                 transaction1.setApplyTax(false);
-                pendiente=updateAccountBalance(debtor, creditor, transaction1, typeProced);
+                pendiente = updateAccountBalance(debtor, creditor, transaction1, typeProced);
                 transaction1.setAmount(transaction1.getAmount().subtract(pendiente));
                 transaction1.setStatus("EXE");
                 transactionRepository.save(transaction1);
 
                 return ResponseTransactionDTO.builder()
-                    .transactionType(transaction1.getTransactionType())
-                    .creditorAccount(transaction1.getCreditorAccount())
-                    .debitorAccount(transaction1.getDebitorAccount())
-                    .createDate(transaction1.getCreateDate())
-                    .pendiente(pendiente)
-                    .status("EXE")
-                    .build();
+                        .transactionType(transaction1.getTransactionType())
+                        .creditorAccount(transaction1.getCreditorAccount())
+                        .debitorAccount(transaction1.getDebitorAccount())
+                        .createDate(transaction1.getCreateDate())
+                        .pendiente(pendiente)
+                        .status("EXE")
+                        .build();
             } else {
                 throw new RuntimeException("Saldo insuficiente para realizar el cobro");
             }
@@ -85,7 +85,7 @@ public class AccountTransactionService {
                 accountRepository.save(debtor);
                 accountRepository.save(creditor);
                 pendiente = BigDecimal.ZERO;
-            }else{
+            } else {
                 BigDecimal newDebitorCBalance = debCurrentBalance.subtract(debAviableBalance);
                 debtor.setCurrentBalance(newDebitorCBalance);
                 debtor.setAvailableBalance(BigDecimal.ZERO);
@@ -100,7 +100,7 @@ public class AccountTransactionService {
             creditor.setCurrentBalance(newBalance);
             creditor.setAvailableBalance(newABalance);
             accountRepository.save(creditor);
-            pendiente=BigDecimal.ZERO;
+            pendiente = BigDecimal.ZERO;
         }
         return pendiente;
     }
