@@ -41,7 +41,7 @@ public class AccountController {
     }
 
     @GetMapping("/client/{clientId}")
-    public ResponseEntity<AccountDTO> getAccountByClientId(@PathVariable Integer clientId) {
+    public ResponseEntity<AccountDTO> getAccountByClientId(@PathVariable String clientId) {
         try {
             System.out.println("Va a buscar una cuenta por id del cliente:" + clientId);
             return ResponseEntity.ok(this.accountMapper.toDTO(this.service.obtainAccountByClientId(clientId)));

@@ -7,7 +7,7 @@ import com.banquito.core.account.model.Account;
 
 public interface AccountRepository extends JpaRepository<Account,Integer>{
     Optional<Account> findByCodeInternalAccount(String codeInternalAccount);
-    Optional<Account> findByClientId(Integer clientId);
+    Optional<Account> findByClientId(String clientId);
     List<Account> findAll();
     Optional<Account> findTopByOrderByCodeUniqueAccountDesc();
     Optional<Account> findTopByOrderByCodeInternationalAccountDesc();

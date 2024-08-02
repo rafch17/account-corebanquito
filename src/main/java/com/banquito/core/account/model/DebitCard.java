@@ -32,8 +32,8 @@ public class DebitCard implements Serializable{
     @Column(name = "UNIQUE_ID", length = 16, nullable = false)
     private String uniqueId;
 
-    @Column(name = "CLIENT_ID", nullable = false)
-    private Long clientId;
+    @Column(name = "CLIENT_ID", length = 12, nullable = false)
+    private String clientId;
 
     @Column(name = "ACCOUNT_ID", nullable = false)
     private Long accountId;

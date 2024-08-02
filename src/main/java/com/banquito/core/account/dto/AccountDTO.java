@@ -11,7 +11,7 @@ public class AccountDTO {
     private String uniqueId;
     private String codeProductType;
     private String codeProduct;
-    private Integer clientId;
+    private String clientId;
     private String codeInternalAccount;
     private BigDecimal currentBalance;
     private BigDecimal availableBalance;

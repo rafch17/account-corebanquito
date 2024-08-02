@@ -1,6 +1,7 @@
 package com.banquito.core.account.controller;
 
 import com.banquito.core.account.dto.DebitCardDTO;
+import com.banquito.core.account.model.Account;
 import com.banquito.core.account.service.DebitCardService;
 import com.banquito.core.account.util.mapper.DebitCardMapper;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(origins = "*", allowedHeaders = "*", methods = { RequestMethod.GET, RequestMethod.POST,
     RequestMethod.PUT })
 @RestController
-@RequestMapping("/debit-cards")
+@RequestMapping("/api/v1/debit-cards")
 public class DebitCardController {
 
     private final DebitCardMapper debitCardMapper;
@@ -33,6 +34,17 @@ public class DebitCardController {
         } catch (RuntimeException rte) {
             rte.printStackTrace();
             return ResponseEntity.notFound().build();
+        }
+    }
+
+     @GetMapping("/account-by-pin/{pin}")
+    public ResponseEntity<Account> getAccountByPin(@PathVariable String pin) {
+        try {
+            Account account = service.obtainAccountByPin(pin);
+            return ResponseEntity.ok(account);
+        } catch (RuntimeException e) {
+            e.printStackTrace(); //BORRAR
+            return ResponseEntity.badRequest().body(null);
         }
     }
 }

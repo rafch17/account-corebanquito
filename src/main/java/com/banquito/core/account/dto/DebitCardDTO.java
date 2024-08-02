@@ -8,8 +8,8 @@ import lombok.Value;
 @Builder
 public class DebitCardDTO {
     private Integer id;
-    private Integer clientId;
-    private Integer accountId;
+    private String clientId;
+    private Long accountId;
     private String cardNumber;
     private String ccv;
     private LocalDate expirationDate;

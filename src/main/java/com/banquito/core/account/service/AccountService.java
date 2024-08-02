@@ -3,12 +3,8 @@ package com.banquito.core.account.service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
-
 import org.springframework.stereotype.Service;
-
 import com.banquito.core.account.dto.AccountDTO;
 import com.banquito.core.account.model.Account;
 import com.banquito.core.account.repository.AccountRepository;
@@ -33,7 +29,7 @@ public class AccountService {
         }
     }
 
-    public Account obtainAccountByClientId(Integer clientId) {
+    public Account obtainAccountByClientId(String clientId) {
         Optional<Account> accountOpt = this.repository.findByClientId(clientId);
         if (accountOpt.isPresent()) {
             return accountOpt.get();

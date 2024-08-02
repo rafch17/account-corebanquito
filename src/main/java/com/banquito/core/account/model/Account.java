@@ -37,8 +37,8 @@ public class Account implements Serializable{
     @Column(name = "CODE_PRODUCT", length = 30, nullable = false)
     private String codeProduct;
 
-    @Column(name = "CLIENT_ID", nullable = false)
-    private Long clientId;
+    @Column(name = "CLIENT_ID", length = 12, nullable = false)
+    private String clientId;
 
     @Column(name = "CODE_UNIQUE_ACCOUNT", length = 10, nullable = false)
     private String codeUniqueAccount;
