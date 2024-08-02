@@ -49,13 +49,14 @@ public class AccountService {
 
     public ClientDTO getClientByAccountId(String codeInternalAccount) {
         Account account = obtainAccount(codeInternalAccount);
+        String uniqueId = account.getClientId();
         log.debug("Going to search client for account number: {}", codeInternalAccount);
         RestClient restClient = RestClient.builder()
-                .baseUrl("http://localhost:9090/api/v1/client")
+                .baseUrl("http://localhost:9090/api/v1")
                 .build();
 
         ClientDTO dto = restClient.get()
-                .uri("/{uniqueId}", account.getUniqueId())
+                .uri("/client/{uniqueId}", uniqueId)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .body(ClientDTO.class);
