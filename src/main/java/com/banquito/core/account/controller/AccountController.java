@@ -1,6 +1,7 @@
 package com.banquito.core.account.controller;
 
 import com.banquito.core.account.dto.AccountDTO;
+import com.banquito.core.account.dto.ClientDTO;
 import com.banquito.core.account.service.AccountService;
 import com.banquito.core.account.util.mapper.AccountMapper;
 import java.util.List;
@@ -49,6 +50,17 @@ public class AccountController {
             rte.printStackTrace();
             return ResponseEntity.notFound().build();
 
+        }
+    }
+
+    @GetMapping("/client-by-account/{codeInternalAccount}")
+    public ResponseEntity<ClientDTO> getClientByAccountId(@PathVariable String codeInternalAccount) {
+        try {
+            ClientDTO client = service.getClientByAccountId(codeInternalAccount);
+            return ResponseEntity.ok(client);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            return ResponseEntity.notFound().build();
         }
     }
 

@@ -4,12 +4,21 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import org.springframework.http.MediaType;
+
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
+
 import com.banquito.core.account.dto.AccountDTO;
+import com.banquito.core.account.dto.ClientDTO;
 import com.banquito.core.account.model.Account;
 import com.banquito.core.account.repository.AccountRepository;
 import com.banquito.core.account.util.mapper.AccountMapper;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class AccountService {
     private final AccountRepository repository;
@@ -35,6 +44,27 @@ public class AccountService {
             return accountOpt.get();
         } else {
             throw new RuntimeException("No existe la cuenta con el ID " + clientId);
+        }
+    }
+
+    public ClientDTO getClientByAccountId(String codeInternalAccount) {
+        Account account = obtainAccount(codeInternalAccount);
+        log.debug("Going to search client for account number: {}", codeInternalAccount);
+        RestClient restClient = RestClient.builder()
+                .baseUrl("http://localhost:9090/api/v1/client")
+                .build();
+
+        ClientDTO dto = restClient.get()
+                .uri("/{uniqueId}", account.getUniqueId())
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .body(ClientDTO.class);
+
+        if (dto != null) {
+            log.info("Client found for account number: {}", codeInternalAccount);
+            return dto;
+        } else {
+            throw new RuntimeException("Cliente no encontrado para el número de cuenta: " + codeInternalAccount);
         }
     }
 
