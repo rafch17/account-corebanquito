@@ -22,7 +22,7 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: clientdoc
+      POSTGRES_DB: account
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
     volumes:
