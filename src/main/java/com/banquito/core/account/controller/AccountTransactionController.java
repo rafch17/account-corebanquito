@@ -23,7 +23,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT })
 @RestController
-@RequestMapping("/api/v1/account-transactions")
+@RequestMapping("/Account-Microservice/api/v1/account-transactions")
 @Tag(name = "Account Transaction Controller", description = "API for managing account transactions")
 public class AccountTransactionController {
 
