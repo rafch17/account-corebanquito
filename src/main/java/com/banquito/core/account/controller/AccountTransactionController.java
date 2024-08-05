@@ -1,7 +1,6 @@
 package com.banquito.core.account.controller;
 
 import com.banquito.core.account.dto.AccountTransactionDTO;
-import com.banquito.core.account.dto.ResponseTransactionDTO;
 import com.banquito.core.account.model.AccountTransaction;
 import com.banquito.core.account.service.AccountTransactionService;
 import com.banquito.core.account.util.mapper.AccountTransactionMapper;
@@ -32,10 +31,10 @@ public class AccountTransactionController {
     }
 
     @PostMapping
-    public ResponseEntity<ResponseTransactionDTO> createTransaction(@RequestBody AccountTransactionDTO dto) {
+    public ResponseEntity<AccountTransactionDTO> createTransaction(@RequestBody AccountTransactionDTO dto) {
         try {
             System.out.println("DTO recibido: " + dto);
-            ResponseTransactionDTO dtoTr = this.transactionService.processTransaction(dto);
+            AccountTransactionDTO dtoTr = this.transactionService.processTransaction(dto);
             return ResponseEntity.ok(dtoTr);
         } catch (RuntimeException rte) {
             rte.printStackTrace();
