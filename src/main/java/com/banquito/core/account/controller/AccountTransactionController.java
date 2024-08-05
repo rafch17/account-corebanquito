@@ -48,6 +48,7 @@ public class AccountTransactionController {
             AccountTransactionDTO dtoTr = this.transactionService.processTransaction(dto);
             return ResponseEntity.ok(dtoTr);
         } catch (RuntimeException rte) {
+            rte.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
     }

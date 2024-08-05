@@ -43,6 +43,7 @@ public class AccountTransactionService {
         this.uniqueIdGeneration = uniqueIdGeneration;
         this.uniqueKeyGeneration = uniqueKeyGeneration;
     }
+
     List<String> accountsRegister = new ArrayList<>();
     List<BigDecimal> amountRegister = new ArrayList<>();
     List<BigDecimal> pendientefinal = new ArrayList<>();
@@ -96,14 +97,13 @@ public class AccountTransactionService {
                 transaction1.setCreditorBankCode("BANCOD001");
                 transaction1.setDebitorBankCode("BANCOD001");
                 transaction1.setApplyTax(true);
-                pendiente = updateAccountBalance(debtor, creditor, transaction1, recaudoMinimo);
-                transaction1.setAmount(transaction1.getAmount().subtract(pendiente)); // TODO solo lo debe setear una
-                                                                                      // vez
+                pendiente = updateAccountBalance(debtor, creditor, transaction1, recaudoMinimo.add(BigDecimal.ONE));
+                transaction1.setAmount(transaction1.getAmount().subtract(pendiente));
                 transaction1.setStatus("EXE");
                 transactionRepository.save(transaction1);
                 pendientefinal.add(pendiente);
                 AccountTransactionDTO accountTransactionDTO1 = null;
-                
+
                 // Respuestas con orden
                 if (transaction1.getCreditorAccount().equals(ACCOUNTBANK)) {
                     accountTransactionDTO1 = AccountTransactionDTO.builder()
@@ -143,7 +143,7 @@ public class AccountTransactionService {
                 }
                 if (transaction1.getCreditorAccount().equals(ACCOUNTIVA)) {
                     log.info("SE PAPGO EL IVA Y LE VOY A PASAR EL ACREDITO ACOUNT {}", accountsRegister.get(0));
-                    log.info("Y EL ARREGLO TIENE ESTO: {}",accountsRegister );
+                    log.info("Y EL ARREGLO TIENE ESTO: {}", accountsRegister);
                     AccountTransactionDTO accountTransactionDTO = AccountTransactionDTO.builder()
                             .accountId(dto.getAccountId())
                             .codeChannel(dto.getCodeChannel())
@@ -172,7 +172,7 @@ public class AccountTransactionService {
                             .comission(BigDecimal.ZERO)
                             .pendiente(pendientefinal.get(0))
                             // .parentTransactionKey(transaction1.getUniqueId())
-                            .amount(dto.getAmount())
+                            .amount(amountRegister.get(0).subtract(pendientefinal.get(0)))
                             .creditorAccount(dto.getCreditorAccount())
                             .debitorAccount(dto.getDebitorAccount())
                             .build();
@@ -183,7 +183,8 @@ public class AccountTransactionService {
             } else {
                 throw new RuntimeException("Saldo insuficiente para realizar el cobro");
             }
-            // accountsRegister.clear();
+            accountsRegister.clear();
+            amountRegister.clear();
             return null;
         }
         throw new RuntimeException("Error en los datos de la transaccion");
@@ -199,7 +200,7 @@ public class AccountTransactionService {
         BigDecimal pendiente = BigDecimal.ZERO;
 
         if ("DEB".equals(transaction.getTransactionType())) {
-            if (debAviableBalance.compareTo(transactionammount.add(recaudoMinimo)) > 0) {
+            if (debAviableBalance.compareTo(transactionammount.add(recaudoMinimo)) >= 0) {
                 BigDecimal newDebitorCBalance = debCurrentBalance.subtract(transactionammount);
                 BigDecimal newDebitorABalance = debAviableBalance.subtract(transactionammount);
                 debtor.setCurrentBalance(newDebitorCBalance);
