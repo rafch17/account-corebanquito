@@ -4,12 +4,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.springframework.http.MediaType;
-
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
-
+import java.security.SecureRandom;
 import com.banquito.core.account.dto.AccountDTO;
 import com.banquito.core.account.dto.ClientDTO;
 import com.banquito.core.account.model.Account;
@@ -52,11 +50,11 @@ public class AccountService {
         String uniqueId = account.getClientId();
         log.debug("Going to search client for account number: {}", codeInternalAccount);
         RestClient restClient = RestClient.builder()
-                .baseUrl("http://localhost:9090/api/v1")
+                .baseUrl("https://m4b60phktl.execute-api.us-east-1.amazonaws.com/banquito/client-microservice/api/v1/clients")
                 .build();
 
         ClientDTO dto = restClient.get()
-                .uri("/client/{uniqueId}", uniqueId)
+                .uri("/{uniqueId}", uniqueId)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .body(ClientDTO.class);
@@ -97,20 +95,16 @@ public class AccountService {
     }
 
     private String generateUniqueAccountCode() {
-        // Obtener el último valor de codeUniqueAccount y generar el nuevo valor
-        String lastCodeUniqueAccount = repository.findTopByOrderByCodeUniqueAccountDesc()
-                .map(Account::getCodeUniqueAccount)
-                .orElse("CUA0000000");
-        int newCode = Integer.parseInt(lastCodeUniqueAccount.substring(3)) + 1;
-        return String.format("CUA%06d", newCode);
+        SecureRandom random = new SecureRandom();
+        int randomNumber = random.nextInt(1000000);
+        return String.format("CUA%06d", randomNumber);
     }
 
     private String generateInternationalAccountCode() {
-        // Obtener el último valor de codeInternationalAccount y generar el nuevo valor
-        String lastCodeInternationalAccount = repository.findTopByOrderByCodeInternationalAccountDesc()
-                .map(Account::getCodeInternationalAccount)
-                .orElse("CIAINT0000000");
-        int newCode = Integer.parseInt(lastCodeInternationalAccount.substring(6)) + 1;
-        return String.format("CIAINT%06d", newCode);
+        SecureRandom random = new SecureRandom();
+        int randomNumber = random.nextInt(1000000);
+        String newCode = String.format("CIAINT%06d", randomNumber);
+
+        return newCode;
     }
 }

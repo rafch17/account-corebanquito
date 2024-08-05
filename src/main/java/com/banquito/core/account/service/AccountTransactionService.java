@@ -43,6 +43,9 @@ public class AccountTransactionService {
         this.uniqueIdGeneration = uniqueIdGeneration;
         this.uniqueKeyGeneration = uniqueKeyGeneration;
     }
+    List<String> accountsRegister = new ArrayList<>();
+    List<BigDecimal> amountRegister = new ArrayList<>();
+    List<BigDecimal> pendientefinal = new ArrayList<>();
 
     public AccountTransactionDTO processTransaction(AccountTransactionDTO dto) {
         log.debug("Procesando transacción con DTO: {}", dto);
@@ -50,43 +53,35 @@ public class AccountTransactionService {
                 && Objects.nonNull(dto.getAmount())
                 && Objects.nonNull(dto.getDebitorAccount()) && Objects.nonNull(dto.getTransactionType())
                 && Objects.nonNull(dto.getReference())) {
-
             BigDecimal valorIVA = dto.getComission().multiply(IVA);
+            accountsRegister.add(dto.getCreditorAccount());
+            amountRegister.add(dto.getAmount());
+            log.info("DATOS EN LA LISTA ACCOUNT REGISTER {}", accountsRegister);
+            log.info("DATOS EN LA LISTA AMOUNT REGISTER {}", amountRegister);
 
-            // List<String> accountsRegister = new ArrayList<>();
-            // List<BigDecimal> amountRegister = new ArrayList<>();
-            // accountsRegister.add(dto.getCreditorAccount());
-            // amountRegister.add(dto.getAmount());
-            // log.info("DATOS EN LA LISTA ACCOUNT REGISTER {}", accountsRegister.get(0));
-            // log.info("DATOS EN LA LISTA AMOUNT REGISTER {}", amountRegister);
-    
             Account debtor = accountService.obtainAccount(dto.getDebitorAccount());
             Account creditor = accountService.obtainAccount(dto.getCreditorAccount());
-            AccountData accountData=null;
-    
+
             AccountTransaction transaction1 = this.accountTransactionMapper.toPersistence(dto);
-    
-            if(dto.getDebitorAccount().equals(ACCOUNTBANK)){
-                creditor=accountService.obtainAccount(dto.getCreditorAccount());
+
+            if (dto.getDebitorAccount().equals(ACCOUNTBANK)) {
+                creditor = accountService.obtainAccount(dto.getCreditorAccount());
                 transaction1.setCreditorAccount(dto.getCreditorAccount());
-            }
-            else if (!dto.getCreditorAccount().equals(ACCOUNTBANK) &&
+            } else if (!dto.getCreditorAccount().equals(ACCOUNTBANK) &&
                     !dto.getCreditorAccount().equals(ACCOUNTIVA) &&
                     !dto.getCreditorAccount().equals(ACCOUNTCOMISSION)) {
                 creditor = accountService.obtainAccount(ACCOUNTBANK);
                 transaction1.setCreditorAccount(ACCOUNTBANK);
-                accountData = new AccountData(dto.getCreditorAccount(), dto.getAmount());
-                log.info("DATOS EN ACCOUNT DATA: account: {}, amount: {}", accountData.getCreditorAccount(), accountData.getAmount());
-    
-            } else if(dto.getCreditorAccount().equals(ACCOUNTCOMISSION)){
+
+            } else if (dto.getCreditorAccount().equals(ACCOUNTCOMISSION)) {
                 creditor = accountService.obtainAccount(ACCOUNTCOMISSION);
                 transaction1.setCreditorAccount(ACCOUNTCOMISSION);
-    
+
             } else if (dto.getCreditorAccount().equals(ACCOUNTIVA)) {
                 creditor = accountService.obtainAccount(ACCOUNTIVA);
                 transaction1.setCreditorAccount(ACCOUNTIVA);
-            } 
-    
+            }
+
             // BigDecimal montoTotalRecaudo
             // =transaction1.getAmount().add(dto.getComission().add(valorIVA));
             BigDecimal recaudoMinimo = dto.getComission().add(valorIVA);
@@ -106,10 +101,12 @@ public class AccountTransactionService {
                                                                                       // vez
                 transaction1.setStatus("EXE");
                 transactionRepository.save(transaction1);
-    
+                pendientefinal.add(pendiente);
+                AccountTransactionDTO accountTransactionDTO1 = null;
+                
                 // Respuestas con orden
                 if (transaction1.getCreditorAccount().equals(ACCOUNTBANK)) {
-                    AccountTransactionDTO accountTransactionDTO = AccountTransactionDTO.builder()
+                    accountTransactionDTO1 = AccountTransactionDTO.builder()
                             .accountId(dto.getAccountId())
                             .codeChannel(dto.getCodeChannel())
                             .transactionType(transaction1.getTransactionType())
@@ -123,11 +120,11 @@ public class AccountTransactionService {
                             .creditorAccount(ACCOUNTCOMISSION)
                             .debitorAccount(dto.getDebitorAccount())
                             .build();
-                    return processTransaction(accountTransactionDTO);
+                    return processTransaction(accountTransactionDTO1);
                 }
                 if (transaction1.getCreditorAccount().equals(ACCOUNTCOMISSION)) {
-                    log.info("YA SE COBRO LA COMISION Y ENVIO EL CREDITOR ACCOUNT {}",accountData.getCreditorAccount());
-                    log.info("YA SE COBRO LA COMISION Y ENVIO EL AMOUNT {}",accountData.getAmount());
+                    Integer posicion = amountRegister.size();
+                    BigDecimal valor = amountRegister.get(posicion-1);
                     AccountTransactionDTO accountTransactionDTO = AccountTransactionDTO.builder()
                             .accountId(dto.getAccountId())
                             .codeChannel(dto.getCodeChannel())
@@ -138,13 +135,15 @@ public class AccountTransactionService {
                             .comission(BigDecimal.ZERO)
                             .pendiente(pendiente)
                             .parentTransactionKey(transaction1.getUniqueId())
-                            .amount(accountData.getAmount().multiply(new BigDecimal("0.15")))
+                            .amount(valor.multiply(new BigDecimal("0.15")))
                             .creditorAccount(ACCOUNTIVA)
                             .debitorAccount(dto.getDebitorAccount())
                             .build();
                     return processTransaction(accountTransactionDTO);
                 }
                 if (transaction1.getCreditorAccount().equals(ACCOUNTIVA)) {
+                    log.info("SE PAPGO EL IVA Y LE VOY A PASAR EL ACREDITO ACOUNT {}", accountsRegister.get(0));
+                    log.info("Y EL ARREGLO TIENE ESTO: {}",accountsRegister );
                     AccountTransactionDTO accountTransactionDTO = AccountTransactionDTO.builder()
                             .accountId(dto.getAccountId())
                             .codeChannel(dto.getCodeChannel())
@@ -155,11 +154,10 @@ public class AccountTransactionService {
                             .comission(BigDecimal.ZERO)
                             .pendiente(pendiente)
                             .parentTransactionKey(transaction1.getUniqueId())
-                            .amount(accountData.getAmount())
-                            .creditorAccount(accountData.getCreditorAccount())
+                            .amount(amountRegister.get(0))
+                            .creditorAccount(accountsRegister.get(0))
                             .debitorAccount(ACCOUNTBANK)
                             .build();
-                            log.info("YA COBRE EL IVA Y ESTOY ENVIANDO CREDITOR ACCOUNT {}", accountData.getCreditorAccount());
                     return processTransaction(accountTransactionDTO);
                 }
                 if (transaction1.getDebitorAccount().equals(ACCOUNTBANK)) {
@@ -172,14 +170,14 @@ public class AccountTransactionService {
                             .createDate(transaction1.getCreateDate())
                             .status("EXE")
                             .comission(BigDecimal.ZERO)
-                            .pendiente(pendiente)
-                            .parentTransactionKey(transaction1.getUniqueId())
+                            .pendiente(pendientefinal.get(0))
+                            // .parentTransactionKey(transaction1.getUniqueId())
                             .amount(dto.getAmount())
                             .creditorAccount(dto.getCreditorAccount())
                             .debitorAccount(dto.getDebitorAccount())
                             .build();
                     // log.info("TAMANIO DE LISTA ACCOUNT {}",accountsRegister.size());
-                    // log.info("TAMANIO DE LISTA MONTOS {}", amountRegister.size());
+                    log.info("TAMANIO DE LISTA MONTOS {}", amountRegister.size());
                     return accountTransactionDTO;
                 }
             } else {
@@ -190,8 +188,6 @@ public class AccountTransactionService {
         }
         throw new RuntimeException("Error en los datos de la transaccion");
     }
-    
-    
 
     private BigDecimal updateAccountBalance(Account debtor, Account creditor, AccountTransaction transaction,
             BigDecimal recaudoMinimo) {
