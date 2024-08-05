@@ -1,9 +1,5 @@
 package com.banquito.core.account.controller;
 
-import com.banquito.core.account.dto.AccountTransactionDTO;
-import com.banquito.core.account.model.AccountTransaction;
-import com.banquito.core.account.service.AccountTransactionService;
-import com.banquito.core.account.util.mapper.AccountTransactionMapper;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -17,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.banquito.core.account.dto.AccountTransactionDTO;
-import com.banquito.core.account.dto.ResponseTransactionDTO;
 import com.banquito.core.account.model.AccountTransaction;
 import com.banquito.core.account.service.AccountTransactionService;
 import com.banquito.core.account.util.mapper.AccountTransactionMapper;
@@ -27,7 +22,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT })
 @RestController
-@RequestMapping("/Account-Microservice/api/v1/account-transactions")
+@RequestMapping("/account-microservice/api/v1/account-transactions")
 @Tag(name = "Account Transaction Controller", description = "API for managing account transactions")
 public class AccountTransactionController {
 

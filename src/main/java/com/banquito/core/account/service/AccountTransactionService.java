@@ -1,21 +1,23 @@
 package com.banquito.core.account.service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import org.springframework.stereotype.Service;
+
 import com.banquito.core.account.dto.AccountTransactionDTO;
 import com.banquito.core.account.model.Account;
-import com.banquito.core.account.model.AccountData;
 import com.banquito.core.account.model.AccountTransaction;
 import com.banquito.core.account.repository.AccountRepository;
 import com.banquito.core.account.repository.AccountTransactionRepository;
 import com.banquito.core.account.util.UniqueId.UniqueIdGeneration;
 import com.banquito.core.account.util.UniqueId.UniqueKeyGeneration;
 import com.banquito.core.account.util.mapper.AccountTransactionMapper;
+
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
-import java.util.ArrayList;
 
 @Slf4j
 @Service
