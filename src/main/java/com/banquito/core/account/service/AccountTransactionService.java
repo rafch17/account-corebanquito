@@ -154,7 +154,7 @@ public class AccountTransactionService {
                             .comission(BigDecimal.ZERO)
                             .pendiente(pendiente)
                             .parentTransactionKey(transaction1.getUniqueId())
-                            .amount(amountRegister.get(0))
+                            .amount(amountRegister.get(0).subtract(pendientefinal.get(0)))
                             .creditorAccount(accountsRegister.get(0))
                             .debitorAccount(ACCOUNTBANK)
                             .build();
@@ -172,7 +172,7 @@ public class AccountTransactionService {
                             .comission(BigDecimal.ZERO)
                             .pendiente(pendientefinal.get(0))
                             // .parentTransactionKey(transaction1.getUniqueId())
-                            .amount(amountRegister.get(0).subtract(pendientefinal.get(0)))
+                            .amount(dto.getAmount())
                             .creditorAccount(dto.getCreditorAccount())
                             .debitorAccount(dto.getDebitorAccount())
                             .build();
