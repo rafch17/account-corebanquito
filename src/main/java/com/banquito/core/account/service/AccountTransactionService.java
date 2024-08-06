@@ -124,7 +124,7 @@ public class AccountTransactionService {
                 }
                 if (transaction1.getCreditorAccount().equals(ACCOUNTCOMISSION)) {
                     Integer posicion = amountRegister.size();
-                    BigDecimal valor = amountRegister.get(posicion-1);
+                    BigDecimal valor = amountRegister.get(posicion - 1);
                     AccountTransactionDTO accountTransactionDTO = AccountTransactionDTO.builder()
                             .accountId(dto.getAccountId())
                             .codeChannel(dto.getCodeChannel())
@@ -178,6 +178,8 @@ public class AccountTransactionService {
                             .build();
                     // log.info("TAMANIO DE LISTA ACCOUNT {}",accountsRegister.size());
                     log.info("TAMANIO DE LISTA MONTOS {}", amountRegister.size());
+                    accountsRegister.clear();
+                    amountRegister.clear();
                     return accountTransactionDTO;
                 }
             } else {
