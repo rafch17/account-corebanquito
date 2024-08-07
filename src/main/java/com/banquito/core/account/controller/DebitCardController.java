@@ -29,6 +29,17 @@ public class DebitCardController {
         this.debitCardMapper = debitCardMapper;
         this.service = service;
     }
+    
+    @Operation(summary = "Get account by PIN")
+    @GetMapping("/account-by-pin/{pin}")
+    public ResponseEntity<Account> getAccountByPin(@PathVariable String pin) {
+        try {
+            Account account = service.obtainAccountByPin(pin);
+            return ResponseEntity.ok(account);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
 
     @Operation(summary = "Get debit card by card number")
     @GetMapping("/by-card-number/{cardNumber}")
@@ -40,14 +51,5 @@ public class DebitCardController {
         }
     }
 
-    @Operation(summary = "Get account by PIN")
-    @GetMapping("/account-by-pin/{pin}")
-    public ResponseEntity<Account> getAccountByPin(@PathVariable String pin) {
-        try {
-            Account account = service.obtainAccountByPin(pin);
-            return ResponseEntity.ok(account);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(null);
-        }
-    }
+
 }

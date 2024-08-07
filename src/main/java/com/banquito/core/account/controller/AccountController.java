@@ -35,6 +35,28 @@ public class AccountController {
         this.service = service;
     }
 
+        @Operation(summary = "Get all accounts")
+    @GetMapping
+    public ResponseEntity<List<AccountDTO>> getAllAccounts() {
+        try {
+            List<AccountDTO> accounts = this.service.obtainAllAccounts();
+            return ResponseEntity.ok(accounts);
+        } catch (RuntimeException rte) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @Operation(summary = "Create or update account")
+    @PostMapping
+    public ResponseEntity<AccountDTO> createOrUpdateAccount(@RequestBody AccountDTO dto) {
+        try {
+            AccountDTO dtoAC = this.service.create(dto);
+            return new ResponseEntity<>(dtoAC, HttpStatus.CREATED);
+        } catch (RuntimeException rte) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @Operation(summary = "Get account by codeInternalAccount")
     @GetMapping("/{codeInternalAccount}")
     public ResponseEntity<AccountDTO> getAccountByCodeUniqueAccount(@PathVariable String codeInternalAccount) {
@@ -63,28 +85,6 @@ public class AccountController {
             return ResponseEntity.ok(client);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
-        }
-    }
-
-    @Operation(summary = "Get all accounts")
-    @GetMapping
-    public ResponseEntity<List<AccountDTO>> getAllAccounts() {
-        try {
-            List<AccountDTO> accounts = this.service.obtainAllAccounts();
-            return ResponseEntity.ok(accounts);
-        } catch (RuntimeException rte) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    @Operation(summary = "Create or update account")
-    @PostMapping
-    public ResponseEntity<AccountDTO> createOrUpdateAccount(@RequestBody AccountDTO dto) {
-        try {
-            AccountDTO dtoAC = this.service.create(dto);
-            return new ResponseEntity<>(dtoAC, HttpStatus.CREATED);
-        } catch (RuntimeException rte) {
-            return ResponseEntity.badRequest().build();
         }
     }
 }
