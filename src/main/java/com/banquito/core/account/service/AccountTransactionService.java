@@ -32,6 +32,7 @@ public class AccountTransactionService {
     private static final String ACCOUNTBANK = "2249598696";
     private static final String ACCOUNTIVA = "2267578945";
     private static final String ACCOUNTCOMISSION = "2286953637";
+    private static final String ACCOUNTVENTANILLA = "2266977777";
     private static final BigDecimal IVA = new BigDecimal("0.15");
 
     public AccountTransactionService(AccountTransactionRepository transactionRepository,
@@ -49,6 +50,7 @@ public class AccountTransactionService {
     List<String> accountsRegister = new ArrayList<>();
     List<BigDecimal> amountRegister = new ArrayList<>();
     List<BigDecimal> pendientefinal = new ArrayList<>();
+    // List<String> debtorRegister = new ArrayList<>();
 
     public AccountTransactionDTO processTransaction(AccountTransactionDTO dto) {
         log.debug("Procesando transacción con DTO: {}", dto);
@@ -66,6 +68,11 @@ public class AccountTransactionService {
             Account creditor = accountService.obtainAccount(dto.getCreditorAccount());
 
             AccountTransaction transaction1 = this.accountTransactionMapper.toPersistence(dto);
+
+            if (dto.getCreditorAccount().equals(ACCOUNTBANK)) {
+                log.info("Se ha incertado una cuenta de banco en la cuenta acreedora, Transaccion cancelada");
+                throw new RuntimeException("Cuenta acreedora incorrecta");
+            }
 
             if (dto.getDebitorAccount().equals(ACCOUNTBANK)) {
                 creditor = accountService.obtainAccount(dto.getCreditorAccount());
@@ -182,6 +189,7 @@ public class AccountTransactionService {
                     log.info("TAMANIO DE LISTA MONTOS {}", amountRegister.size());
                     accountsRegister.clear();
                     amountRegister.clear();
+                    pendientefinal.clear();
                     return accountTransactionDTO;
                 }
             } else {
@@ -194,10 +202,86 @@ public class AccountTransactionService {
         throw new RuntimeException("Error en los datos de la transaccion");
     }
 
+    public AccountTransactionDTO processCollection(AccountTransactionDTO dto) {
+        log.debug("Procesando transacción con DTO: {}", dto);
+        if (Objects.nonNull(dto.getAccountId()) && Objects.nonNull(dto.getCodeChannel())
+                && Objects.nonNull(dto.getAmount())
+                && Objects.nonNull(dto.getCreditorAccount()) && Objects.nonNull(dto.getTransactionType())
+                && Objects.nonNull(dto.getReference()) && Objects.nonNull(dto.getAmountCollected())) {
+            BigDecimal valorIVA = dto.getComission().multiply(IVA);
+            accountsRegister.add(dto.getCreditorAccount());
+            amountRegister.add(dto.getAmount());
+            // log.info("DATOS EN LA LISTA ACCOUNT REGISTER {}", accountsRegister);
+            // log.info("DATOS EN LA LISTA AMOUNT REGISTER {}", amountRegister);
+            // debtorRegister.add(dto.getDebitorAccount());
+            Account debtor = null;
+            Account creditor = accountService.obtainAccount(dto.getCreditorAccount());
+            AccountTransaction transaction1 = this.accountTransactionMapper.toPersistence(dto);
+
+            if (dto.getCreditorAccount().equals(ACCOUNTVENTANILLA)) {
+                log.info("Se ha incertado una cuenta de banco en la cuenta acreedora, Transaccion cancelada");
+                throw new RuntimeException("Cuenta acreedora incorrecta");
+            }
+
+            if (!dto.getCreditorAccount().equals(ACCOUNTVENTANILLA)
+                    && !dto.getCreditorAccount().equals(ACCOUNTCOMISSION)
+                    && !dto.getCreditorAccount().equals(ACCOUNTIVA)) {
+                transaction1.setCreditorAccount(ACCOUNTVENTANILLA);
+                transaction1.setAmount(dto.getAmountCollected());
+                creditor = accountService.obtainAccount(ACCOUNTVENTANILLA);
+            }
+            if(dto.getDebitorAccount().equals(ACCOUNTVENTANILLA)){
+                debtor = accountService.obtainAccount(ACCOUNTVENTANILLA);
+            }
+
+            BigDecimal pendiente = dto.getAmount().subtract(dto.getAmountCollected());
+            transaction1.setUniqueId(uniqueIdGeneration.generateUniqueId());
+            transaction1.setUniqueKey(uniqueKeyGeneration.generateUniqueKey());
+            transaction1.setTransactionSubtype("TRANSFER");
+            transaction1.setCreateDate(LocalDateTime.now());
+            transaction1.setBookingDate(LocalDateTime.now());
+            transaction1.setValueDate(LocalDateTime.now());
+            transaction1.setCreditorBankCode("BANCOD001");
+            transaction1.setDebitorBankCode("BANCOD001");
+            transaction1.setApplyTax(true);
+            updateAccountBalance(debtor, creditor, transaction1,BigDecimal.ZERO);
+            //TO DO poner una excepcion en caso de que no se pudo hacer
+            transaction1.setAmount(dto.getAmountCollected());
+            transaction1.setStatus("EXE");
+            transactionRepository.save(transaction1);
+            pendientefinal.add(pendiente);
+            AccountTransactionDTO accountTransactionDTO1 = null;
+
+            // Respuestas con orden
+            if (transaction1.getCreditorAccount().equals(ACCOUNTVENTANILLA)) {
+                accountTransactionDTO1 = AccountTransactionDTO.builder()
+                        .accountId(dto.getAccountId())
+                        .codeChannel(dto.getCodeChannel())
+                        .transactionType("DEB")
+                        .reference(dto.getReference())
+                        .createDate(transaction1.getCreateDate())
+                        .status("EXE")
+                        .comission(dto.getComission())
+                        .pendiente(pendiente)
+                        .parentTransactionKey(transaction1.getUniqueId())
+                        .amount(dto.getAmountCollected())
+                        .creditorAccount(accountsRegister.get(0))
+                        .debitorAccount(ACCOUNTVENTANILLA)
+                        .build();
+                return accountTransactionDTO1;//processTransaction(accountTransactionDTO1);
+            }
+        }
+        throw new RuntimeException("Error en los datos de la transaccion");
+    }
+
     private BigDecimal updateAccountBalance(Account debtor, Account creditor, AccountTransaction transaction,
             BigDecimal recaudoMinimo) {
-        BigDecimal debCurrentBalance = debtor.getCurrentBalance();
-        BigDecimal debAviableBalance = debtor.getAvailableBalance();
+        BigDecimal debCurrentBalance = null;
+        BigDecimal debAviableBalance = null;
+        if (debtor != null){
+            debCurrentBalance = debtor.getCurrentBalance();
+            debAviableBalance = debtor.getAvailableBalance();
+        }
         BigDecimal credCurrentBalance = creditor.getCurrentBalance();
         BigDecimal credAviableBalance = creditor.getAvailableBalance();
         BigDecimal transactionammount = transaction.getAmount();
@@ -227,13 +311,14 @@ public class AccountTransactionService {
                 creditor.setAvailableBalance(credAviableBalance.add(saldoDisponible));
             }
 
+            // En teoria no está siendo usado (Investigar con los canales si están usando
+            // esta excepcion)
         } else if ("CRE".equals(transaction.getTransactionType())) {
             BigDecimal newBalance = credCurrentBalance.add(transactionammount);
             BigDecimal newABalance = credAviableBalance.add(transactionammount);
             creditor.setCurrentBalance(newBalance);
             creditor.setAvailableBalance(newABalance);
             accountRepository.save(creditor);
-            pendiente = BigDecimal.ZERO;
         }
         return pendiente;
     }

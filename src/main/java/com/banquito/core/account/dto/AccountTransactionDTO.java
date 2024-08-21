@@ -8,6 +8,7 @@ import lombok.Value;
 @Value
 @Builder
 public class AccountTransactionDTO {
+    //TRANSACTIONS
     private Integer accountId;
     private String codeChannel;
     private BigDecimal amount;
@@ -17,6 +18,9 @@ public class AccountTransactionDTO {
     private String reference;
     private BigDecimal comission;
     private String parentTransactionKey;
+    
+    //EXTRA COLLECTION
+    private BigDecimal amountCollected;
 
     //RESPONSE
     private LocalDateTime createDate;

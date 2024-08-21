@@ -48,6 +48,19 @@ public class AccountTransactionController {
         }
     }
 
+    @Operation(summary = "Create a new Collection")
+    @PostMapping("/collections")
+    public ResponseEntity<AccountTransactionDTO>createCollection(@RequestBody AccountTransactionDTO dto){
+        try{
+            System.out.println("DTO recibido: "+dto);
+            AccountTransactionDTO dtoTr = this.transactionService.processCollection(dto);
+            return ResponseEntity.ok(dtoTr);
+        } catch(RuntimeException rte){
+            rte.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @Operation(summary = "Get transactions by codeInternalAccount")
     @GetMapping("/{codeInternalAccount}")
     public ResponseEntity<List<AccountTransactionDTO>> getTransactionsByCodeUniqueAccount(
