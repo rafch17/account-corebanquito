@@ -50,6 +50,4 @@ public class DebitCardController {
             return ResponseEntity.notFound().build();
         }
     }
-
-
 }

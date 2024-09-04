@@ -35,7 +35,7 @@ public class AccountController {
         this.service = service;
     }
 
-        @Operation(summary = "Get all accounts")
+    @Operation(summary = "Get all accounts")
     @GetMapping
     public ResponseEntity<List<AccountDTO>> getAllAccounts() {
         try {

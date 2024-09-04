@@ -32,7 +32,7 @@ public class AccountService {
         if (accountOpt.isPresent()) {
             return accountOpt.get();
         } else {
-            throw new RuntimeException("No existe la ceunta con el numero" + codeInternalAccount);
+            throw new RuntimeException("No existe la cuenta con el numero" + codeInternalAccount);
         }
     }
 
